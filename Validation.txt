@@ -1,0 +1,56 @@
+// usee with sanctum Rest Api
+
+$validateCategory = Validator::make($request->all(), [
+
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:categories,slug',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'description' => 'required|string',
+            'status' => 'required|boolean',
+        ]);
+
+        if ($validateCategory->fails()) {
+            return response()->json([
+                'status' => 'false',
+                'message' => 'Validation failed',
+                'data' => $validateCategory->errors()
+            ], 422);
+        }
+
+//we used this methode also in controlller
+
+$request->validate([
+            'name'=>'required|string|max:20',
+            'category_code'=>'required|numeric|max:10|unique:categories,category_code,'.$id,
+            'description'=>'required|nullable',
+            'is_active'=>'required|boolean',
+        ],[
+            'name.required'=>'category name must be required',
+            'name.string'=>'category name must be string',
+            'name.max'=>'category name must be less than 20 characters',
+
+            'category_code.required'=>'category code must be required',
+            'category_code.numeric'=>'category code must be numeric',
+            'category_code.max'=>'category code must be less than 10',
+
+            'description.required'=>'description must be required',
+        ]);
+
+// Also Request File seprate for Validation
+
+public function rules()
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'short_code' => ['nullable', 'string', 'max:255'],
+            'add_as_sub_cat' => ['nullable'],
+            'parent_id' => ['required_if:add_as_sub_cat,1'],
+        ];
+    }
+
+    public function messages()
+        {
+            return [
+                'parent_id.required_if' => 'Please select a parent category if you are adding this as a sub-category.',
+            ];
+        }
