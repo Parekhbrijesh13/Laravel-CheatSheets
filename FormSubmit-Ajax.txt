@@ -1,0 +1,40 @@
+<script>
+        $(document).ready(function() {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $(document).on('submit', '#registerForm', function(e) {
+
+                e.preventDefault();
+                $('.text-danger').text('');
+                let data = $(this).serialize();
+
+                $.ajax({
+                    url: '/api/register',
+                    method: 'POST',
+                    data: data,
+
+                    success: function(response) {
+                        alert('Registration successful! Please login to continue.');
+                        window.location.href = "{{ route('login') }}";
+                    },
+                    error: function(response) {
+
+                        if (response.status == 422) {
+                            let errors = response.responseJSON.errors;
+                            $.each(errors, function(key, value) {
+                                $('.' + key + '_error').text(value[0]);
+                            });
+
+                        } else {
+                            alert('Something went wrong');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
